@@ -134,7 +134,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 </head>
 <body>
 <div class="top-band">
-  <div class="logo">Nova<span></span>assist</div>
+  <div class="logo">Nova Assist</div>
   <div style="text-align:right"><div class="clock" id="clock">—</div><div class="dateline" id="dateline">—</div></div>
 </div>
 <div class="hero">
@@ -153,7 +153,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 <div class="section"><div class="section-head"><div class="section-title">Lumière</div><div class="section-line"></div><div class="section-sub">chambre</div></div>
 <div class="light-card" id="lightCard"><div class="light-glow-bg" id="lightGlowBg"></div><div class="light-head"><div><div class="light-icon">🛏</div><div class="light-name">Chambre</div><div class="light-sub" id="lightSub">éteinte</div></div><div class="toggle" id="lightToggle" onclick="toggleLight()"></div></div><div class="light-preview" id="lightPreview">lumière éteinte</div><div class="ctrl-row"><div class="ctrl-lbl">intensité</div><input type="range" id="brightnessRange" min="5" max="100" value="70" oninput="setBrightness(+this.value)" disabled><div class="ctrl-val" id="brightnessVal">70%</div></div><div class="ctrl-row" style="align-items:flex-start"><div class="ctrl-lbl" style="padding-top:5px">couleur</div><div class="swatches" id="swatches"></div></div></div></div>
 <div class="section"><div class="section-head"><div class="section-title">Contrôles</div><div class="section-line"></div></div><div class="ctrl-grid" id="ctrlGrid"></div></div>
-<div class="footer">Cormorant Garamond + Outfit — luxe & mode ✦</div>
+<div class="footer">✦</div>
 <script>
 const S={light:{on:false,brightness:70,color:'#d4778a'},volets:[{id:'salon',name:'Salon',icon:'🛋',pos:100},{id:'chambre',name:'Chambre',icon:'🛏',pos:0},{id:'bureau',name:'Bureau',icon:'💼',pos:50},{id:'cuisine',name:'Cuisine',icon:'🍳',pos:100}],controls:[{id:'alarme',name:'Alarme',icon:'🔒',on:true},{id:'chauffage',name:'Chauffage',icon:'🔥',on:true},{id:'clim',name:'Clim',icon:'❄️',on:false},{id:'prise',name:'Prise',icon:'🔌',on:true},{id:'cameras',name:'Caméras',icon:'📷',on:true},{id:'musique',name:'Musique',icon:'🎵',on:false}],weather:{temp:18,feels:16,humidity:62,wind:14,cloud:45,desc:'Partiellement nuageux',icon:'⛅',loc:'Paris, France',forecast:[{day:'Mar',icon:'🌤',temp:20},{day:'Mer',icon:'🌧',temp:15},{day:'Jeu',icon:'⛈',temp:13},{day:'Ven',icon:'☀️',temp:22},{day:'Sam',icon:'☀️',temp:24}]},recording:false,recognition:null,history:[],orbState:'idle'};
 const SW=[{hex:'#fff9e0'},{hex:'#fbbf24'},{hex:'#d4778a'},{hex:'#b89c82'},{hex:'#8a9c52'},{hex:'#b0a84e'},{hex:'#9b3a54'}];
