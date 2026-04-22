@@ -134,18 +134,18 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 </head>
 <body>
 <div class="top-band">
-  <div class="logo">Nova Assist</div>
-  <div style="text-align:right"><div class="clock" id="clock">—</div><div class="dateline" id="dateline">—</div></div>
+ <div class="logo">Nova Assist</div>
+ <div style="text-align:right"><div class="clock" id="clock">—</div><div class="dateline" id="dateline">—</div></div>
 </div>
 <div class="hero">
-  <div class="orb-outer"><div class="orb-ring"></div><div class="ai-orb" id="aiOrb" onclick="toggleMic()"><span id="orbIcon">🏡</span></div></div>
-  <div class="orb-label" id="orbLabel">appuyez pour parler</div>
-  <button class="mic-btn" id="micBtn" onclick="toggleMic()"><span class="mic-dot" id="micDot"></span><span id="micLabel">parler à nova</span></button>
+ <div class="orb-outer"><div class="orb-ring"></div><div class="ai-orb" id="aiOrb" onclick="toggleMic()"><span id="orbIcon">🏡</span></div></div>
+ <div class="orb-label" id="orbLabel">appuyez pour parler</div>
+ <button class="mic-btn" id="micBtn" onclick="toggleMic()"><span class="mic-dot" id="micDot"></span><span id="micLabel">parler à nova</span></button>
 </div>
 <div class="convo-strip">
-  <div class="convo-title">dialogue</div>
-  <div class="convo" id="convo"><div class="msg msg-sys">Bonjour. Je suis Nova, votre assistante.</div><div class="msg msg-sys">Ex : "ouvre les volets", "allume la lumière à 80%", "quel temps demain ?"</div></div>
-  <div class="input-row"><input class="txt-in" id="txtIn" type="text" placeholder="écrire à nova…" onkeydown="if(event.key==='Enter')sendTxt()"><button class="send-btn" onclick="sendTxt()">→</button></div>
+ <div class="convo-title">dialogue</div>
+ <div class="convo" id="convo"><div class="msg msg-sys">Bonjour. Je suis Nova, votre assistante.</div><div class="msg msg-sys">Ex : "ouvre les volets", "allume la lumière à 80%", "quel temps demain ?"</div></div>
+ <div class="input-row"><input class="txt-in" id="txtIn" type="text" placeholder="écrire à nova…" onkeydown="if(event.key==='Enter')sendTxt()"><button class="send-btn" onclick="sendTxt()">→</button></div>
 </div>
 <div class="section"><div class="section-head"><div class="section-title">Météo</div><div class="section-line"></div><div class="section-sub">en direct</div></div>
 <div class="weather-card"><div class="w-main"><div class="w-emoji" id="wIcon">⛅</div><div><div class="w-loc" id="wLoc">Paris, France</div><div style="display:flex;align-items:baseline;gap:4px"><div class="w-temp" id="wTemp">18</div><div class="w-unit">°C</div></div><div class="w-desc" id="wDesc">Partiellement nuageux</div></div></div><div class="w-details"><div class="w-det">💧 <strong id="wHum">62%</strong></div><div class="w-det">💨 <strong id="wWind">14 km/h</strong></div><div class="w-det">🌡 <strong id="wFeel">16°C</strong></div><div class="w-det">☁️ <strong id="wCloud">45%</strong></div></div><div class="w-forecast" id="wForecast"></div></div></div>
@@ -154,162 +154,31 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 <div class="light-card" id="lightCard"><div class="light-glow-bg" id="lightGlowBg"></div><div class="light-head"><div><div class="light-icon">🛏</div><div class="light-name">Chambre</div><div class="light-sub" id="lightSub">éteinte</div></div><div class="toggle" id="lightToggle" onclick="toggleLight()"></div></div><div class="light-preview" id="lightPreview">lumière éteinte</div><div class="ctrl-row"><div class="ctrl-lbl">intensité</div><input type="range" id="brightnessRange" min="5" max="100" value="70" oninput="setBrightness(+this.value)" disabled><div class="ctrl-val" id="brightnessVal">70%</div></div><div class="ctrl-row" style="align-items:flex-start"><div class="ctrl-lbl" style="padding-top:5px">couleur</div><div class="swatches" id="swatches"></div></div></div></div>
 <div class="section"><div class="section-head"><div class="section-title">Contrôles</div><div class="section-line"></div></div><div class="ctrl-grid" id="ctrlGrid"></div></div>
 <div class="footer">✦</div>
-<script
-const OPENAI_API_KEY = "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"; // ⚠️ à sécuriser en backend en vrai
-
-const S={
-light:{on:false,brightness:70,color:'#d4778a'},
-volets:[
-{id:'salon',name:'Salon',icon:'🛋',pos:100},
-{id:'chambre',name:'Chambre',icon:'🛏',pos:0},
-{id:'bureau',name:'Bureau',icon:'💼',pos:50},
-{id:'cuisine',name:'Cuisine',icon:'🍳',pos:100}
-],
-controls:[
-{id:'alarme',name:'Alarme',icon:'🔒',on:true},
-{id:'chauffage',name:'Chauffage',icon:'🔥',on:true},
-{id:'clim',name:'Clim',icon:'❄️',on:false},
-{id:'prise',name:'Prise',icon:'🔌',on:true},
-{id:'cameras',name:'Caméras',icon:'📷',on:true},
-{id:'musique',name:'Musique',icon:'🎵',on:false}
-],
-weather:{temp:18,feels:16,humidity:62,wind:14,cloud:45,desc:'Partiellement nuageux',icon:'⛅',loc:'Paris, France'},
-history:[],
-orbState:'idle'
-};
-
-// ---------------- IA ----------------
-
-async function processQuery(text){
-addMsg('user',text);
-setOrb('thinking');
-
-const ctx={
-meteo:S.weather,
-lumiere:S.light,
-volets:S.volets,
-controles:S.controls
-};
-
-const systemPrompt = `
-Tu es Nova, assistant domotique élégant.
-
-Règles STRICTES :
-- Réponds UNIQUEMENT en JSON valide
-- AUCUN texte hors JSON
-- Maximum 2 phrases dans "speech"
-
-Format :
-{
-"actions":[
-{"type":"lumiere","action":"on|off","brightness":5-100,"color":"#hex"},
-{"type":"volet","room":"salon|chambre|bureau|cuisine|all","action":"open|close|half"},
-{"type":"control","id":"alarme|chauffage|clim|prise|cameras|musique","action":"on|off"}
-],
-"speech":"réponse courte"
-}
-
-Etat actuel :
-${JSON.stringify(ctx)}
-`;
-
-try{
-const res = await fetch("https://api.openai.com/v1/chat/completions",{
-method:"POST",
-headers:{
-"Content-Type":"application/json",
-"Authorization":`Bearer ${OPENAI_API_KEY}`
-},
-body:JSON.stringify({
-model:"gpt-4o-mini",
-messages:[
-{role:"system",content:systemPrompt},
-...S.history,
-{role:"user",content:text}
-],
-temperature:0.6
-})
-});
-
-const data = await res.json();
-let raw = data.choices?.[0]?.message?.content || "";
-
-S.history.push({role:"user",content:text},{role:"assistant",content:raw});
-if(S.history.length>10)S.history=S.history.slice(-10);
-
-// nettoyage JSON (ultra important)
-let parsed;
-try{
-const match = raw.match(/\{[\s\S]*\}/);
-parsed = match ? JSON.parse(match[0]) : null;
-}catch(e){parsed=null;}
-
-let speech = "Je n'ai pas compris.";
-if(parsed){
-speech = parsed.speech || speech;
-if(parsed.actions) applyActions(parsed.actions);
-}
-
-setOrb('speaking');
-addMsg('ai',speech);
-speak(speech);
-
-setTimeout(()=>setOrb('idle'),2500);
-
-}catch(e){
-setOrb('idle');
-addMsg('sys',"⚠️ erreur IA");
-}
-}
-
-// ---------------- ACTIONS ----------------
-
-function applyActions(actions){
-actions.forEach(a=>{
-if(a.type==="lumiere"){
-if(a.action==="on")S.light.on=true;
-if(a.action==="off")S.light.on=false;
-if(a.brightness)S.light.brightness=a.brightness;
-if(a.color)S.light.color=a.color;
-renderLight();
-}
-
-if(a.type==="volet"){
-const pos = a.action==="open"?0:a.action==="close"?100:50;
-(S.volets.filter(v=>a.room==="all"||v.id===a.room))
-.forEach(v=>v.pos=pos);
-renderVolets();
-}
-
-if(a.type==="control"){
-const c=S.controls.find(x=>x.id===a.id);
-if(c){c.on=a.action==="on";renderControls();}
-}
-});
-}
-
-// ---------------- UI (inchangé) ----------------
-
-function addMsg(role,text){
-const d=document.getElementById('convo');
-const el=document.createElement('div');
-el.className=`msg msg-${role}`;
-el.textContent=text;
-d.appendChild(el);
-d.scrollTop=d.scrollHeight;
-}
-
-function setOrb(state){
-document.getElementById('aiOrb').className='ai-orb '+state;
-}
-
-function speak(t){
-if(!('speechSynthesis' in window))return;
-const u=new SpeechSynthesisUtterance(t);
-u.lang='fr-FR';
-speechSynthesis.speak(u);
-}
-
+<script>
+const S={light:{on:false,brightness:70,color:'#d4778a'},volets:[{id:'salon',name:'Salon',icon:'🛋',pos:100},{id:'chambre',name:'Chambre',icon:'🛏',pos:0},{id:'bureau',name:'Bureau',icon:'💼',pos:50},{id:'cuisine',name:'Cuisine',icon:'🍳',pos:100}],controls:[{id:'alarme',name:'Alarme',icon:'🔒',on:true},{id:'chauffage',name:'Chauffage',icon:'🔥',on:true},{id:'clim',name:'Clim',icon:'❄️',on:false},{id:'prise',name:'Prise',icon:'🔌',on:true},{id:'cameras',name:'Caméras',icon:'📷',on:true},{id:'musique',name:'Musique',icon:'🎵',on:false}],weather:{temp:18,feels:16,humidity:62,wind:14,cloud:45,desc:'Partiellement nuageux',icon:'⛅',loc:'Paris, France',forecast:[{day:'Mar',icon:'🌤',temp:20},{day:'Mer',icon:'🌧',temp:15},{day:'Jeu',icon:'⛈',temp:13},{day:'Ven',icon:'☀️',temp:22},{day:'Sam',icon:'☀️',temp:24}]},recording:false,recognition:null,history:[],orbState:'idle'};
+const SW=[{hex:'#fff9e0'},{hex:'#fbbf24'},{hex:'#d4778a'},{hex:'#b89c82'},{hex:'#8a9c52'},{hex:'#b0a84e'},{hex:'#9b3a54'}];
+function tick(){const n=new Date();document.getElementById('clock').textContent=n.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});document.getElementById('dateline').textContent=n.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});}setInterval(tick,1000);tick();
+function renderWeather(){const w=S.weather;document.getElementById('wIcon').textContent=w.icon;document.getElementById('wTemp').textContent=w.temp;document.getElementById('wLoc').textContent=w.loc;document.getElementById('wDesc').textContent=w.desc;document.getElementById('wHum').textContent=w.humidity+'%';document.getElementById('wWind').textContent=w.wind+' km/h';document.getElementById('wFeel').textContent=w.feels+'°C';document.getElementById('wCloud').textContent=w.cloud+'%';document.getElementById('wForecast').innerHTML=w.forecast.map(f=>`<div class="fc"><div class="fc-day">${f.day}</div><div class="fc-icon">${f.icon}</div><div class="fc-t">${f.temp}°</div></div>`).join('');}
+function renderVolets(){document.getElementById('voletsGrid').innerHTML=S.volets.map(v=>{const h=Math.round((100-v.pos)/100*48);return`<div class="volet-card"><div class="vt-name">${v.icon} ${v.name}</div><div class="vt-visual"><div class="vt-shade" style="height:${h}px"></div>${v.pos<80?'<div class="vt-sun">☀️</div>':''}</div><div class="vt-btns"><div class="vt-btn ${v.pos===0?'active':''}" onclick="setVolet('${v.id}',0)">ouv</div><div class="vt-btn ${v.pos===50?'active':''}" onclick="setVolet('${v.id}',50)">mi</div><div class="vt-btn ${v.pos===100?'active':''}" onclick="setVolet('${v.id}',100)">ferm</div></div><div class="vt-pct">${v.pos===0?'ouvert':v.pos===100?'fermé':'mi-ouvert'}</div></div>`;}).join('');}
+function setVolet(id,pos){const v=S.volets.find(x=>x.id===id);v.pos=pos;renderVolets();addMsg('sys',`🪟 ${v.name} : ${pos===0?'ouvert':pos===100?'fermé':'mi-ouvert'}`);}
+function renderLight(){const l=S.light;document.getElementById('lightCard').className='light-card'+(l.on?' on':'');document.getElementById('lightToggle').className='toggle'+(l.on?' on':'');const r=document.getElementById('brightnessRange');r.disabled=!l.on;r.value=l.brightness;document.getElementById('brightnessVal').textContent=l.brightness+'%';document.getElementById('lightSub').textContent=l.on?`allumée · ${l.brightness}%`:'éteinte';document.getElementById('lightGlowBg').style.background=`radial-gradient(circle at 70% 20%,${l.color}60,transparent 60%)`;const p=document.getElementById('lightPreview');if(l.on){const a=Math.round((0.2+(l.brightness/100)*.6)*255).toString(16).padStart(2,'0');p.style.background=l.color+a;p.style.boxShadow=`inset 0 0 40px ${l.color}55`;p.style.borderLeftColor=l.color+'99';p.textContent='';}else{p.style.cssText='';p.textContent='lumière éteinte';}document.getElementById('swatches').innerHTML=SW.map(s=>`<div class="swatch ${l.color===s.hex?'sel':''}" style="background:${s.hex}" onclick="setColor('${s.hex}')"></div>`).join('');}
+function toggleLight(){S.light.on=!S.light.on;renderLight();addMsg('sys',`💡 Lumière chambre : ${S.light.on?'allumée':'éteinte'}`);}
+function setBrightness(v){S.light.brightness=v;renderLight();}
+function setColor(hex){S.light.color=hex;if(!S.light.on)S.light.on=true;renderLight();}
+function renderControls(){document.getElementById('ctrlGrid').innerHTML=S.controls.map(c=>`<div class="ccard ${c.on?'on':''}" onclick="toggleCtrl('${c.id}')"><div class="ccard-bar"></div><div class="ccard-icon">${c.icon}</div><div class="ccard-name">${c.name}</div><div class="ccard-state">${c.on?'actif':'inactif'}</div></div>`).join('');}
+function toggleCtrl(id){const c=S.controls.find(x=>x.id===id);c.on=!c.on;renderControls();addMsg('sys',`${c.icon} ${c.name} : ${c.on?'activé':'désactivé'}`);}
+function setOrb(st){S.orbState=st;const m={idle:{icon:'🏡',label:'appuyez pour parler'},listening:{icon:'👂',label:'je vous écoute…'},thinking:{icon:'🧠',label:'je réfléchis…'},speaking:{icon:'💬',label:'je réponds…'}};document.getElementById('aiOrb').className='ai-orb'+(st!=='idle'?' '+st:'');document.getElementById('orbIcon').textContent=m[st].icon;document.getElementById('orbLabel').textContent=m[st].label;}
+function addMsg(role,text){const d=document.getElementById('convo');const el=document.createElement('div');el.className=role==='sys'?'msg msg-sys':`msg msg-${role}`;el.textContent=text;d.appendChild(el);d.scrollTop=d.scrollHeight;}
+function toggleMic(){S.recording?stopMic():startMic();}
+function startMic(){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){addMsg('sys','⚠️ Utilisez Chrome pour la reconnaissance vocale.');return;}const rec=new SR();rec.lang='fr-FR';rec.continuous=false;rec.interimResults=false;S.recognition=rec;S.recording=true;setOrb('listening');document.getElementById('micBtn').classList.add('rec');document.getElementById('micDot').classList.add('blink');document.getElementById('micLabel').textContent='arrêter';rec.onresult=e=>{stopMic();processQuery(e.results[0][0].transcript);};rec.onerror=()=>{stopMic();};rec.onend=()=>{if(S.recording)stopMic();};rec.start();}
+function stopMic(){S.recording=false;try{S.recognition?.stop();}catch(e){}document.getElementById('micBtn').classList.remove('rec');document.getElementById('micDot').classList.remove('blink');document.getElementById('micLabel').textContent='parler à nova';if(S.orbState==='listening')setOrb('idle');}
+function sendTxt(){const el=document.getElementById('txtIn');const t=el.value.trim();if(!t)return;el.value='';processQuery(t);}
+async function processQuery(text){addMsg('user',text);setOrb('thinking');const ctx={meteo:S.weather,lumiere_chambre:{on:S.light.on,intensite:S.light.brightness+'%',couleur:S.light.color},volets:S.volets.map(v=>({nom:v.name,etat:v.pos===0?'ouvert':v.pos===100?'fermé':'mi-ouvert'})),controles:S.controls.map(c=>({nom:c.name,actif:c.on})),heure:new Date().toLocaleTimeString('fr-FR')};const sys=`Tu es Nova, assistant domotique élégant. Français, chaleureux, concis (2 phrases max).\nÉtat : ${JSON.stringify(ctx)}\nRéponds UNIQUEMENT en JSON :\n{"actions":[{"type":"lumiere","action":"on|off","brightness":5-100,"color":"#hex"},{"type":"volet","room":"salon|chambre|bureau|cuisine|all","action":"open|close|half"},{"type":"control","id":"alarme|chauffage|clim|prise|cameras|musique","action":"on|off"}],"speech":"réponse"}\nQuestion seule : {"actions":[],"speech":"réponse"}`;try{const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:600,system:sys,messages:[...S.history,{role:'user',content:text}]})});const data=await res.json();const raw=data.content?.[0]?.text||'';S.history.push({role:'user',content:text},{role:'assistant',content:raw});if(S.history.length>12)S.history=S.history.slice(-12);let speech=raw;try{const m=raw.match(/\{[\s\S]*\}/);if(m){const p=JSON.parse(m[0]);if(p.speech)speech=p.speech;if(p.actions)applyActions(p.actions);}}catch(e){}setOrb('speaking');addMsg('ai',speech);speak(speech);setTimeout(()=>setOrb('idle'),Math.max(2500,speech.length*60));}catch(e){setOrb('idle');addMsg('sys','⚠️ Erreur connexion IA.');}}
+function applyActions(a){a.forEach(x=>{if(x.type==='lumiere'){if(x.action==='on')S.light.on=true;if(x.action==='off')S.light.on=false;if(x.brightness)S.light.brightness=x.brightness;if(x.color)S.light.color=x.color;renderLight();}if(x.type==='volet'){const p=x.action==='open'?0:x.action==='close'?100:50;(x.room==='all'?S.volets:S.volets.filter(v=>v.id===x.room)).forEach(v=>v.pos=p);renderVolets();}if(x.type==='control'){const c=S.controls.find(z=>z.id===x.id);if(c){c.on=x.action==='on';renderControls();}}});}
+function speak(t){if(!('speechSynthesis' in window))return;window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='fr-FR';u.rate=1.02;const v=speechSynthesis.getVoices().find(v=>v.lang.startsWith('fr'));if(v)u.voice=v;speechSynthesis.speak(u);}
+renderWeather();renderVolets();renderLight();renderControls();
+if('speechSynthesis' in window){speechSynthesis.getVoices();speechSynthesis.onvoiceschanged=()=>speechSynthesis.getVoices();}
+setTimeout(()=>{const h=new Date().getHours();const g=h<12?'Bonjour':h<18?'Bon après-midi':'Bonsoir';const msg=`${g}. Nova est prête — comment puis-je vous aider ?`;addMsg('ai',msg);setOrb('speaking');speak(msg);setTimeout(()=>setOrb('idle'),3000);},800);
 </script>
 </body>
 </html>
